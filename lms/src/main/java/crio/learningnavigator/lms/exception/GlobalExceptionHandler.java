@@ -18,5 +18,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(EnrollmentException.class)
+    public ResponseEntity<?> handleEnrollmentException(EnrollmentException ex, WebRequest request) {
+        String causeMessage = (ex.getCause() != null) ? ex.getCause().getMessage() : "No cause available";
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), causeMessage);
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FetchDetailsException.class)
+    public ResponseEntity<?> handleFetchDetailsException(FetchDetailsException ex, WebRequest request) {
+        String causeMessage = (ex.getCause() != null) ? ex.getCause().getMessage() : "No cause available";
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), causeMessage);
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
     
 }

@@ -1,18 +1,21 @@
 package crio.learningnavigator.lms.service;
 
 import crio.learningnavigator.lms.dto.ExamDto;
+import crio.learningnavigator.lms.exception.EnrollmentException;
 import crio.learningnavigator.lms.exception.RegistrationException;
 import crio.learningnavigator.lms.model.Exam;
+import crio.learningnavigator.lms.model.Student;
 import crio.learningnavigator.lms.model.Subject;
 import crio.learningnavigator.lms.repository.IExamRepository;
+import crio.learningnavigator.lms.repository.IStudentRepository;
 import crio.learningnavigator.lms.repository.ISubjectRepository;
-
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ExamService {
@@ -20,47 +23,70 @@ public class ExamService {
     private ISubjectRepository iSubjectRepository;
     @Autowired
     private IExamRepository iExamRepository;
+    @Autowired
+    private IStudentRepository iStudentRepository;
 
-    public ExamDto registerExam(long subjectId, String subjectName, String examDate) {
+    public ExamDto registerExam(long subjectId) {
         try {
 
-            if (subjectId < 1) {
-                throw new RegistrationException("Please enter correct subject id.", new Throwable("Subject Id should be 1 or greater."));
-            }
+            Optional<Subject> checkSubject = iSubjectRepository.findById(subjectId);
+            
 
-            if (subjectName == null || subjectName.isEmpty()) {
-                throw new RegistrationException("Please enter subject name", new Throwable("Subject name cannot be empty or null."));
-            }
-
-            if (!Pattern.compile("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/([0-9]{4})$").matcher(examDate).matches()) {
-                throw new RegistrationException("Please enter correct date", new Throwable("Date must be in the format DD/MM/YYYY"));
-            }
-
-
-            //check subject name and id exist in "subject" table
-
-            Optional<Subject> subject = iSubjectRepository.findById(subjectId);
-
-            if(!subject.isPresent()){
-                throw new RegistrationException("Please enter correct subject id.", new Throwable("Subject Id should be present."));
-            }
-
-            if(!subject.get().getName().equals(subjectName)){
-                throw new RegistrationException("Please enter correct subject name", new Throwable("Subject name should be present with corresponding subject id."));
+            if(!checkSubject.isPresent()){
+                throw new RegistrationException("Please enter correct subject id", new Throwable("Subject id should be registered."));
             }
 
             
             Exam exam = new Exam();
-            exam.setSubjectId(subjectId);
-            exam.setSubjectName(subjectName);
-            exam.setExamDate(examDate);
+            exam.setSubject(checkSubject.get());
+            exam.setEnrolledStudents(new ArrayList<>());
 
             Exam saveExam =  iExamRepository.save(exam);
-            return new ExamDto(saveExam.getExamId(), saveExam.getSubjectId(), saveExam.getSubjectName(), saveExam.getExamDate());
+            return new ExamDto(saveExam.getExamId(), saveExam.getSubject(), saveExam.getEnrolledStudents());
             
         } catch (Exception e) {
             throw new RegistrationException(e.getMessage(),e.getCause());
         }
+    }
+
+    public ExamDto registerExamForStudent(Long id, long studentId) {
+
+        try {
+            if(id < 1 || studentId < 1){
+                throw new RegistrationException("Please enter correct ids", new Throwable("Ids cannot be less than 1"));
+            }
+
+            Optional<Student> student = iStudentRepository.findById(studentId);
+            Optional<Exam> exam = iExamRepository.findById(id);
+
+            if(!student.isPresent()){
+                throw new EnrollmentException("Please enter registered student id", new Throwable("Entered student id is not correct"));
+            }
+
+            if(!exam.isPresent()){
+                throw new EnrollmentException("Please enter registered exam id", new Throwable("Entered exam id is not correct"));
+            }
+            //Check student's suject list if Exam subject is present or not
+            List<Subject> listSubject= student.get().getEnrolledSubject();
+            Subject examSubject = exam.get().getSubject();
+
+            boolean isEnrolled = listSubject.stream().anyMatch(subject -> subject.getSubjectId() == examSubject.getSubjectId());
+
+            if(!isEnrolled){
+                throw new EnrollmentException("Student cannot register in a exam without enrolling in specific subject.", new Throwable("Enter correct student and exam id"));
+            }
+
+            // /Adding Exam
+            student.get().getRegisteredExam().add(exam.get());
+
+            iStudentRepository.save(student.get());
+
+            return new ExamDto(exam.get().getExamId(), examSubject, exam.get().getEnrolledStudents());
+
+        } catch (Exception e) {
+            throw new EnrollmentException(e.getMessage(),e.getCause());
+        }
+       
     }
     
 }

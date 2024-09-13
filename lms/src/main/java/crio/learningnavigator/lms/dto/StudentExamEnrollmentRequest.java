@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ExamRegisterDto {
-
-    private long subjectId;
-
+@NoArgsConstructor
+public class StudentExamEnrollmentRequest {
+    private long studentId;
 }

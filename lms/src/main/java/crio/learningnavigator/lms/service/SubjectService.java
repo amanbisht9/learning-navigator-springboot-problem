@@ -1,9 +1,13 @@
 package crio.learningnavigator.lms.service;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crio.learningnavigator.lms.dto.SubjectDto;
+import crio.learningnavigator.lms.exception.FetchDetailsException;
 import crio.learningnavigator.lms.exception.RegistrationException;
 import crio.learningnavigator.lms.model.Subject;
 import crio.learningnavigator.lms.repository.ISubjectRepository;
@@ -23,6 +27,7 @@ public class SubjectService {
             
             Subject subject = new Subject();
             subject.setName(name);
+            subject.setRegisteredStudent(new ArrayList<>());
         
             Subject saveSubject =  subjectRepository.save(subject);
             return new SubjectDto(saveSubject.getSubjectId(), saveSubject.getName());
@@ -31,5 +36,4 @@ public class SubjectService {
             throw new RegistrationException(e.getMessage(),e.getCause());
         }
     }
-    
 }

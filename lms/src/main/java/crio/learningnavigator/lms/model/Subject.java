@@ -2,9 +2,15 @@ package crio.learningnavigator.lms.model;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Subject {
@@ -14,17 +20,17 @@ public class Subject {
 
     private String name;
 
-    
-    // private Student registeredStudent;
+    @ManyToMany(mappedBy = "enrolledSubject", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Student> registeredStudent;
 
- 
-    // private Exam exam;
 
-    public Long getSubjectId() {
+    //Getters && Setters
+    public long getSubjectId() {
         return subjectId;
     }
 
-    public void setSubjectId(Long subjectId) {
+    public void setSubjectId(long subjectId) {
         this.subjectId = subjectId;
     }
 
@@ -36,21 +42,18 @@ public class Subject {
         this.name = name;
     }
 
-    // public Student getRegisteredStudent() {
-    //     return registeredStudent;
-    // }
+    public List<Student> getRegisteredStudent() {
+        return registeredStudent;
+    }
 
-    // public void setRegisteredStudent(Student registeredStudent) {
-    //     this.registeredStudent = registeredStudent;
-    // }
+    public void setRegisteredStudent(List<Student> registeredStudent) {
+        this.registeredStudent = registeredStudent;
+    }
 
-    // public Exam getExam() {
-    //     return exam;
-    // }
 
-    // public void setExam(Exam exam) {
-    //     this.exam = exam;
-    // }
+
+
+   
 
     
 }

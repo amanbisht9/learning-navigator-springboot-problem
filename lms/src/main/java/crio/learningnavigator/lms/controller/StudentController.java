@@ -5,14 +5,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import crio.learningnavigator.lms.dto.StudentDto;
-
+import crio.learningnavigator.lms.dto.StudentSubjectEnrollRequest;
+import crio.learningnavigator.lms.dto.SubjectDto;
+import crio.learningnavigator.lms.model.Student;
 import crio.learningnavigator.lms.service.StudentService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -28,11 +33,34 @@ public class StudentController {
         return new ResponseEntity<>(student, HttpStatus.CREATED);
     }
 
-    // @PostMapping("/suject_enrollment")
-    // public String postMethodName(@RequestBody String entity) {
-    //     //TODO: process POST request
-        
-    //     return entity;
-    // }
+    @PostMapping("/subject_enrollment")
+    public ResponseEntity<Student> subjectEnrollment(@RequestBody StudentSubjectEnrollRequest studentSubjectEnrollRequest) {
+        long studentId = studentSubjectEnrollRequest.getStudentId();
+        long subjectId = studentSubjectEnrollRequest.getSubjectId();
+        Student student = studentService.studentSubjectEnrollment(studentId, subjectId);
+        return new ResponseEntity<>(student, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/exam_enrollment")
+    public ResponseEntity<Student> examEnrollment(@RequestBody StudentSubjectEnrollRequest studentSubjectEnrollRequest) {
+        long studentId = studentSubjectEnrollRequest.getStudentId();
+        long subjectId = studentSubjectEnrollRequest.getSubjectId();
+        Student student = studentService.studentSubjectEnrollment(studentId, subjectId);
+        return new ResponseEntity<>(student, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> getStudentDetailsById(@PathVariable Long id) {
+
+        Student student = studentService.getStudentDetailsById(id);
+        return new ResponseEntity<>(student, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Student>> getAllStudentDetails() {
+
+        List<Student> students = studentService.getAllStudentDetails();
+        return new ResponseEntity<>(students, HttpStatus.CREATED);
+    }
     
 }

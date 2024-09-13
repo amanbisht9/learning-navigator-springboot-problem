@@ -1,11 +1,16 @@
 package crio.learningnavigator.lms.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Pattern;
-import java.lang.String;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;;
 
 @Entity
 public class Exam {
@@ -13,49 +18,43 @@ public class Exam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long examId;
 
-    private long subjectId;
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 
-    private String subjectName;
+    @ManyToMany(mappedBy = "registeredExam", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Student> enrolledStudents;
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$", message = "Date must be in the format DD/MM/YYYY")
-    private String examDate;
+    //Getter && Setters
 
+    public long getExamId() {
+        return examId;
+    }
 
+    public void setExamId(long examId) {
+        this.examId = examId;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public List<Student> getEnrolledStudents() {
+        return enrolledStudents;
+    }
+
+    public void setEnrolledStudents(List<Student> enrolledStudents) {
+        this.enrolledStudents = enrolledStudents;
+    }
 
 
     
 
-    public String getExamDate() {
-        return examDate;
-    }
-
-    public void setExamDate(String examDate) {
-        this.examDate = examDate;
-    }
-
-    public long getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(long subjectId) {
-        this.subjectId = subjectId;
-    }
-
-
-    public String getSubjectName() {
-        return subjectName;
-    }
-
-    public void setSubjectName(String subjectName) {
-        this.subjectName = subjectName;
-    }
-
-    public Long getExamId() {
-        return examId;
-    }
-
-    public void setExamId(Long examId) {
-        this.examId = examId;
-    }
+    
 
 }
