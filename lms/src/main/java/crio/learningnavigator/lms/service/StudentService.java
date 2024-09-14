@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crio.learningnavigator.lms.dto.StudentDto;
-import crio.learningnavigator.lms.dto.SubjectDto;
 import crio.learningnavigator.lms.exception.EnrollmentException;
 import crio.learningnavigator.lms.exception.FetchDetailsException;
 import crio.learningnavigator.lms.exception.RegistrationException;

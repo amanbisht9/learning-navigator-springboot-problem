@@ -25,6 +25,14 @@ public class Subject {
     private List<Student> registeredStudent;
 
 
+    public Subject() {
+    }
+
+    public Subject(long subjectId, String name) {
+        this.subjectId = subjectId;
+        this.name = name;
+    }
+
     //Getters && Setters
     public long getSubjectId() {
         return subjectId;
